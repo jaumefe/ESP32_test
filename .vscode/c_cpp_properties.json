@@ -7,7 +7,8 @@
                 "/home/jaume/esp/esp-idf/components/freertos/include",
                 "/home/jaume/esp/esp-idf/components/esp_common/include",
                 "/home/jaume/esp/esp-idf/components/driver/include",
-                "/home/jaume/esp/esp-idf/components/esp_hw_support/include"
+                "/home/jaume/esp/esp-idf/components/esp_hw_support/include",
+                "/home/jaume/esp/esp-idf/components/soc/esp32/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

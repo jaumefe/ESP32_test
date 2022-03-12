@@ -2,6 +2,7 @@
 #include <driver/uart.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <string.h>
 
 int app_main(){
     // Configuration of UART2
@@ -31,5 +32,15 @@ int app_main(){
     uart_set_pin(uart_num_1, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, 
                                                                     UART_PIN_NO_CHANGE);
     uart_driver_install(uart_num_2, (1024*2),0,0,NULL,0);
+
+    char * test = "Hello World\n";
+
+    while(1){
+        uint8_t data[128];
+        int length = 0;
+        uart_read_bytes(uart_num_1, data, length,(size_t *) &length);
+        uart_write_bytes(uart_num_2, (const char*)test, strlen(test));
+        
+    }
     return 0;
 }
