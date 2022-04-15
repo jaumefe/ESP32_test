@@ -21,3 +21,26 @@ void configGPIO(){
     };
     gpio_config(&configGPIO);
 }
+
+int waitOrTimeout (uint16_t us, int level){
+    uint16_t timer = 0;
+    while(gpio_get_level(DHT)==level){
+        if (timer++ > us){
+            timer = 99;
+        }
+        ets_delay_us(1);
+    }
+    return timer;
+}
+
+int app_main(){
+    //preparation for data
+    int timer1 = waitOrTimeout(80, 0);
+    int timer2 = waitOrTimeout(80, 1);
+    //Start to transmit 1 bit
+    for(int i = 0; i < 40; i++){
+        waitOrTimeout(50, 0);
+        int timer3 = waitOrTimeout(26, 1);
+    }
+
+}
