@@ -3,8 +3,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "esp_log.h"
+#include "esp_timer.h"
+#include "rom/ets_sys.h"
+
 #define DHT11 5
 static const char* TAG = "DHT11";
+static const char* TAG1 = "Debug";
 
 void startup(){
     gpio_set_level(DHT11, 0);
@@ -25,12 +29,17 @@ void configGPIO(){
 
 int waitOrTimeout (uint16_t us, int level){
     uint16_t timer = 0;
+    ESP_LOGW(TAG1, "Punt 3.1: Timer:%d, Level:%d", timer, level);
     while(gpio_get_level(DHT11)==level){
+        ESP_LOGW(TAG1, "Punt 3.2: Timer:%d, Level:%d", timer, level);
         if (timer++ > us){
             timer = 99;
+            ESP_LOGW(TAG1, "Punt 3.3: Timer:%d, Level:%d", timer, level);
+            break;
         }
         ets_delay_us(1);
     }
+    ESP_LOGW(TAG1, "Punt 3.4");
     return timer;
 }
 
@@ -38,23 +47,28 @@ int app_main(){
     //preparation for data
     int data[5] = {0,0,0,0,0};
     configGPIO();
-    vTaskDelay(500/portTICK_RATE_MS);
-    ets_delay_us(1);
-    vTaskDelay(500/portTICK_RATE_MS);
-    ets_delay_us(1);
-    vTaskDelay(500/portTICK_RATE_MS);
-    ets_delay_us(1);
-    vTaskDelay(500/portTICK_RATE_MS);
-    startup();
-    int timer1 = waitOrTimeout(80, 0);
-    int timer2 = waitOrTimeout(80, 1);
-    //Start to transmit 1 bit
-    for(int i = 0; i < 40; i++){
-        int timer3 = waitOrTimeout(50, 0);
-        if(waitOrTimeout(26, 1) > 28){
-            data[i/8] = (1 << (7 - i%8));
+    ESP_LOGW(TAG1, "Punt 1");
+    while(1){
+        int timer = esp_timer_get_time();
+        //ESP_LOGW(TAG1, "Punt 2");
+        int i = 1;
+        if(timer>=i*2000000){
+            startup();
+            ESP_LOGW(TAG1, "Punt 3");
+            int timer1 = waitOrTimeout(80, 0);
+            ESP_LOGW(TAG1, "Punt 4: Level:%d", gpio_get_level(DHT11));
+            int timer2 = waitOrTimeout(80, 1);
+            ESP_LOGW(TAG1, "Punt 5");
+            //Start to transmit 1 bit
+            for(int i = 0; i < 40; i++){
+                int timer3 = waitOrTimeout(50, 0);
+                if(waitOrTimeout(26, 1) > 28){
+                    data[i/8] = (1 << (7 - i%8));
+                }
+            }
+            ESP_LOGW(TAG, "Temperature:%d.%d, Humidity: %d.%d", data[0], data[1], data[2], data[3]);
         }
-    }
-    ESP_LOGW(TAG, "Temperature:%d.%d, Humidity: %d.%d", data[0], data[1], data[2], data[3]);
+        i++;  
+    }  
     return 0;
 }
