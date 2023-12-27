@@ -19,6 +19,9 @@ static const char *TAG = "i2c-simple-example";
 #define SHT4xA_SENSOR_ADDR                 0x44
 #define SHT4xA_ID_ADDR                     0x89
 
+#define BME680_ADDR                        0x74
+#define BME680_ID                          0xD0
+
 static esp_err_t register_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data, size_t len)
 {
     return i2c_master_write_read_device(I2C_MASTER_NUM, slave_addr, &reg_addr, 1, data, len, I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
@@ -60,13 +63,13 @@ void app_main(void)
     ESP_ERROR_CHECK(i2c_master_init());
     ESP_LOGI(TAG, "I2C initialized successfully");
 
-    ESP_ERROR_CHECK(register_read(DPS310_SENSOR_ADDR, DPS310_ID_ADDR, data, 1));
+    ESP_ERROR_CHECK(register_read(BME680_ADDR, BME680_ID, data, 1));
     ESP_LOGI(TAG, "ID = %X", data[0]);
     ESP_LOGI(TAG, "ID = %X", data[1]);
 
     ESP_ERROR_CHECK(i2c_driver_delete(I2C_MASTER_NUM));
     ESP_LOGI(TAG, "I2C de-initialized successfully");
-
+/*
 
     ESP_ERROR_CHECK(i2c_master_init());
     ESP_LOGI(TAG, "I2C initialized successfully");
@@ -126,5 +129,5 @@ void app_main(void)
 
 
     ESP_ERROR_CHECK(i2c_driver_delete(I2C_MASTER_NUM));
-    ESP_LOGI(TAG, "I2C de-initialized successfully");
+    ESP_LOGI(TAG, "I2C de-initialized successfully");*/
 }
